@@ -17,7 +17,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Criar Pastas e Projeto Android Completo
+      - name: Criar Pastas e Projeto Android Compatível
         run: |
           echo "A criar diretórios de pastas..."
           mkdir -p app/src/main/res/drawable
@@ -30,8 +30,8 @@ jobs:
           # build.gradle.kts (App)
           cat << 'EOF' > app/build.gradle.kts
           plugins {
-              id("com.android.application")
-              id("org.jetbrains.kotlin.android")
+              id("com.android.application") version "8.2.2"
+              id("org.jetbrains.kotlin.android") version "1.9.22"
           }
           android {
               namespace = "com.almeida.picadassotv"
@@ -92,8 +92,8 @@ jobs:
           # build.gradle (Raiz)
           cat << 'EOF' > build.gradle.kts
           plugins {
-              id("com.android.application") version "8.2.0" apply false
-              id("org.jetbrains.kotlin.android") version "1.9.0" apply false
+              id("com.android.application") version "8.2.2" apply false
+              id("org.jetbrains.kotlin.android") version "1.9.22" apply false
           }
           EOF
 
@@ -105,7 +105,8 @@ jobs:
           include(":app")
           EOF
 
-          gradle wrapper
+          # Força a versão 8.5 do Gradle compatível com Android 8.2.2
+          gradle wrapper --gradle-version 8.5
 
       - name: Compilar APK com Gradle Wrapper
         run: ./gradlew assembleDebug
