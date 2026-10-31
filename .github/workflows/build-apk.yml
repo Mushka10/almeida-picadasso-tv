@@ -17,10 +17,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Criar Projeto Android Completo e Ficheiro Gradlew
+      - name: Criar Pastas e Projeto Android Completo
         run: |
-          echo "A criar estrutura de pastas..."
-          mkdir -p app/src/main/res/drawable app/src/main/java/com/alt/picadassotv
+          echo "A criar diretórios de pastas..."
+          mkdir -p app/src/main/res/drawable
+          mkdir -p app/src/main/java/com/almeida/picadassotv
           
           if [ -f "almeida_mascote.jpg" ]; then
             cp almeida_mascote.jpg app/src/main/res/drawable/almeida_mascote.jpg
@@ -104,7 +105,6 @@ jobs:
           include(":app")
           EOF
 
-          # Gerador automático do comando gradlew para evitar erros
           gradle wrapper
 
       - name: Compilar APK com Gradle Wrapper
