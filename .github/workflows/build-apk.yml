@@ -17,28 +17,22 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Criar Projeto Android Completo e Ficheiros de Configuração
+      - name: Criar Projeto Android Blindado (Sem Erros)
         run: |
-          echo "A criar diretórios..."
-          mkdir -p app/src/main/res/drawable
+          echo "A criar pastas estruturais..."
+          mkdir -p app/src/main/res/values
           mkdir -p app/src/main/java/com/almeida/picadassotv
-          
-          if [ -f "almeida_mascote.jpg" ]; then
-            cp almeida_mascote.jpg app/src/main/res/drawable/almeida_mascote.jpg
-          fi
 
-          # gradle.properties (Ativa o AndroidX e Jetifier obrigatoriamente)
           cat << 'EOF' > gradle.properties
           android.useAndroidX=true
           android.enableJetifier=true
           org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
           EOF
 
-          # build.gradle.kts (App)
           cat << 'EOF' > app/build.gradle.kts
           plugins {
-              id("com.android.application") version "8.2.2"
-              id("org.jetbrains.kotlin.android") version "1.9.22"
+              id("com.android.application") version "8.1.4"
+              id("org.jetbrains.kotlin.android") version "1.9.10"
           }
           android {
               namespace = "com.almeida.picadassotv"
@@ -48,7 +42,7 @@ jobs:
                   minSdk = 26
                   targetSdk = 34
                   versionCode = 1
-                  versionName = "1.0-VIP"
+                  versionName = "1.0-Ultimate"
               }
               compileOptions {
                   sourceCompatibility = JavaVersion.VERSION_11
@@ -59,16 +53,19 @@ jobs:
           dependencies {
               implementation("androidx.core:core-ktx:1.12.0")
               implementation("androidx.appcompat:appcompat:1.6.1")
-              implementation("androidx.media3:media3-exoplayer:1.3.1")
-              implementation("androidx.media3:media3-ui:1.3.1")
+              implementation("com.google.android.material:material:1.11.0")
           }
           EOF
 
-          # AndroidManifest.xml
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <uses-permission android:name="android.permission.INTERNET" />
-              <application android:label="AlmeidaPiçadasso TV" android:icon="@drawable/almeida_mascote" android:usesCleartextTraffic="true">
+              <application
+                  android:allowBackup="true"
+                  android:icon="@android:drawable/ic_menu_play_clip"
+                  android:roundIcon="@android:drawable/ic_menu_play_clip"
+                  android:label="AlmeidaPiçadasso TV"
+                  android:usesCleartextTraffic="true">
                   <activity android:name=".MainActivity" android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -79,32 +76,36 @@ jobs:
           </manifest>
           EOF
 
-          # MainActivity.kt
           cat << 'EOF' > app/src/main/java/com/almeida/picadassotv/MainActivity.kt
           package com.almeida.picadassotv
           import android.os.Bundle
           import android.widget.TextView
+          import android.graphics.Color
+          import android.view.Gravity
           import androidx.appcompat.app.AppCompatActivity
+
           class MainActivity : AppCompatActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
-                  val tv = TextView(this)
-                  tv.text = "⚡ ALMEIDAPIÇADASSO TV VIP ⚡\nSistema IPTV & Media Ultimate Ativo!"
-                  tv.textSize = 18f
+                  val tv = TextView(this).apply {
+                      text = "⚡ ALMEIDAPIÇADASSO TV ULTIMATE ⚡\n\nSistema VIP Ativo & Pronto a Transmitir!"
+                      textSize = 22f
+                      setTextColor(Color.parseColor("#FFD700"))
+                      gravity = Gravity.CENTER
+                      setBackgroundColor(Color.parseColor("#070A12"))
+                  }
                   setContentView(tv)
               }
           }
           EOF
 
-          # build.gradle (Raiz)
           cat << 'EOF' > build.gradle.kts
           plugins {
-              id("com.android.application") version "8.2.2" apply false
-              id("org.jetbrains.kotlin.android") version "1.9.22" apply false
+              id("com.android.application") version "8.1.4" apply false
+              id("org.jetbrains.kotlin.android") version "1.9.10" apply false
           }
           EOF
 
-          # settings.gradle.kts
           cat << 'EOF' > settings.gradle.kts
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
@@ -112,9 +113,9 @@ jobs:
           include(":app")
           EOF
 
-          gradle wrapper --gradle-version 8.5
+          gradle wrapper --gradle-version 8.4
 
-      - name: Compilar APK com Gradle Wrapper
+      - name: Compilar APK Final
         run: ./gradlew assembleDebug
 
       - name: Guardar Ficheiro APK Gerado
