@@ -17,17 +17,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Criar Projeto Android Mínimo Automático
+      - name: Criar Projeto Android Completo e Ficheiro Gradlew
         run: |
-          echo "A preparar estrutura Android..."
-          mkdir -p app/src/main/res/drawable app/src/main/java/com/almeida/picadassotv
+          echo "A criar estrutura de pastas..."
+          mkdir -p app/src/main/res/drawable app/src/main/java/com/alt/picadassotv
           
-          # Copia a imagem se existir para a pasta correta
           if [ -f "almeida_mascote.jpg" ]; then
             cp almeida_mascote.jpg app/src/main/res/drawable/almeida_mascote.jpg
           fi
 
-          # Criar build.gradle.kts do Módulo App
+          # build.gradle.kts (App)
           cat << 'EOF' > app/build.gradle.kts
           plugins {
               id("com.android.application")
@@ -57,7 +56,7 @@ jobs:
           }
           EOF
 
-          # Criar AndroidManifest.xml
+          # AndroidManifest.xml
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <uses-permission android:name="android.permission.INTERNET" />
@@ -72,7 +71,7 @@ jobs:
           </manifest>
           EOF
 
-          # Criar MainActivity.kt base
+          # MainActivity.kt
           cat << 'EOF' > app/src/main/java/com/almeida/picadassotv/MainActivity.kt
           package com.almeida.picadassotv
           import android.os.Bundle
@@ -82,14 +81,14 @@ jobs:
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   val tv = TextView(this)
-                  tv.text = "⚡ BEM-VINDO AO ALMEIDAPIÇADASSO TV VIP ⚡\nSistema pronto a carregar streams 4K!"
-                  tv.textSize = 20f
+                  tv.text = "⚡ ALMEIDAPIÇADASSO TV VIP ⚡\nSistema IPTV & Media Ultimate Ativo!"
+                  tv.textSize = 18f
                   setContentView(tv)
               }
           }
           EOF
 
-          # Criar build.gradle raiz
+          # build.gradle (Raiz)
           cat << 'EOF' > build.gradle.kts
           plugins {
               id("com.android.application") version "8.2.0" apply false
@@ -97,7 +96,7 @@ jobs:
           }
           EOF
 
-          # Criar settings.gradle.kts
+          # settings.gradle.kts
           cat << 'EOF' > settings.gradle.kts
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
           dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
@@ -105,7 +104,10 @@ jobs:
           include(":app")
           EOF
 
-      - name: Compilar APK com Gradle
+          # Gerador automático do comando gradlew para evitar erros
+          gradle wrapper
+
+      - name: Compilar APK com Gradle Wrapper
         run: ./gradlew assembleDebug
 
       - name: Guardar Ficheiro APK Gerado
