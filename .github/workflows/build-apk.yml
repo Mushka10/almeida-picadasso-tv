@@ -17,15 +17,22 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Criar Pastas e Projeto Android Compatível
+      - name: Criar Projeto Android Completo e Ficheiros de Configuração
         run: |
-          echo "A criar diretórios de pastas..."
+          echo "A criar diretórios..."
           mkdir -p app/src/main/res/drawable
           mkdir -p app/src/main/java/com/almeida/picadassotv
           
           if [ -f "almeida_mascote.jpg" ]; then
             cp almeida_mascote.jpg app/src/main/res/drawable/almeida_mascote.jpg
           fi
+
+          # gradle.properties (Ativa o AndroidX e Jetifier obrigatoriamente)
+          cat << 'EOF' > gradle.properties
+          android.useAndroidX=true
+          android.enableJetifier=true
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          EOF
 
           # build.gradle.kts (App)
           cat << 'EOF' > app/build.gradle.kts
@@ -105,7 +112,6 @@ jobs:
           include(":app")
           EOF
 
-          # Força a versão 8.5 do Gradle compatível com Android 8.2.2
           gradle wrapper --gradle-version 8.5
 
       - name: Compilar APK com Gradle Wrapper
